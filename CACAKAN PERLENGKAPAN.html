@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Cacakan Sekaa Perlengkapan Desa Adat Linjong — v6.3</title>
+<style>
+:root{--primary:#0b63d6;--accent:#059669;--muted:#64748b}
+body{font-family:Arial,Helvetica,sans-serif;background:#f8fafc;margin:0;padding:12px;color:#071029}
+.container{max-width:980px;margin:10px auto;background:#fff;padding:16px;border-radius:10px;box-shadow:0 6px 22px rgba(2,6,23,0.06)}
+h1{color:var(--primary);text-align:center;margin:6px 0 12px;font-size:20px}
+.note{background:#f0f9ff;color:#075985;padding:10px;border-radius:8px;margin-bottom:12px;font-size:13px}
+.menu{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.menu button{flex:1;min-width:160px;padding:10px;border-radius:8px;border:none;color:#fff;font-weight:700;cursor:pointer}
+.m1{background:var(--primary)}.m2{background:var(--accent)}.m3{background:#8b5cf6}.m4{background:#f59e0b}.m5{background:#ef4444}
+.section{display:none}.active{display:block}
+label{display:block;margin-top:8px;font-weight:700}
+input,select,textarea{width:100%;padding:8px;margin-top:6px;border-radius:8px;border:1px solid #e6eef7;box-sizing:border-box}
+.row{display:flex;gap:8px}
+.col{flex:1}
+.btn{display:inline-block;padding:10px 12px;border-radius:8px;border:none;color:#fff;font-weight:700;cursor:pointer;margin-top:10px}
+.btn.primary{background:var(--primary)}.btn.gray{background:#6b7280}.btn.green{background:var(--accent)}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:14px}
+th,td{border:1px solid #eef4fb;padding:8px;text-align:left}
+th{background:#f1f8ff}
+.summary{background:#f1f8ff;padding:8px;border-radius:8px;margin-top:10px;text-align:center;font-weight:700}
+.chk-list{max-height:320px;overflow:auto;border:1px solid #eef4fb;padding:8px;border-radius:6px}
+.small{font-size:13px;color:var(--muted)}
+.action{color:#dc2626;cursor:pointer;font-weight:700}
+.footer{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+@media (max-width:640px){ .row{flex-direction:column} }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>📋 Cacakan Sekaa Perlengkapan Desa Adat Linjong — v6.3</h1>
+  <div class="note">
+    Simpan file di HP, buka dengan Chrome / Kiwi / Opera. Nomor WA gunakan format <b>628...</b> (tanpa +/0).  
+    Data tersimpan di perangkat (localStorage). Internet diperlukan saat kirim WA atau unduh Excel.
+  </div>
+
+  <div class="menu">
+    <button class="m1" onclick="show('anggota')">👥 Anggota</button>
+    <button class="m2" onclick="show('kegiatan')">🧾 Kegiatan (Sekaligus)</button>
+    <button class="m3" onclick="show('iuran')">💰 Iuran</button>
+    <button class="m4" onclick="show('pengumuman')">📣 Pengumuman</button>
+    <button class="m5" onclick="show('laporan')">📊 Laporan</button>
+  </div>
+
+  <!-- ANGGOTA -->
+  <div id="anggota" class="section active">
+    <h3>👥 Data Anggota</h3>
+    <div class="row">
+      <div class="col">
+        <label>Nama</label>
+        <input id="ang_nama" placeholder="Contoh: I Made Suta"/>
+      </div>
+      <div class="col">
+        <label>Nomor WA (628...)</label>
+        <input id="ang_hp" placeholder="Contoh: 62812xxxxxxxx"/>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn primary" onclick="tambahAng()">➕ Simpan Anggota</button>
+      <button class="btn gray" onclick="resetAllConfirm()">⚠️ Reset Semua Data</button>
+    </div>
+    <div class="small">Daftar anggota (urut terbaru di atas)</div>
+    <table id="tblAnggota"><thead><tr><th>Nama</th><th>HP</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+  </div>
+
+  <!-- KEGIATAN (SEKALIGUS) -->
+  <div id="kegiatan" class="section">
+    <h3>🧾 Kegiatan — Simpan Sekaligus untuk Banyak Anggota</h3>
+
+    <div class="row">
+      <div class="col">
+        <label>Tanggal</label>
+        <input type="date" id="multi_tgl"/>
+      </div>
+      <div class="col">
+        <label>Jam (opsional)</label>
+        <input type="time" id="multi_time"/>
+      </div>
+      <div class="col">
+        <label>Jenis Kegiatan (opsional)</label>
+        <input id="multi_jenis" placeholder="Contoh: Ayahan / Pangeling Upacara"/>
+      </div>
+    </div>
+
+    <label>Nama Kegiatan</label>
+    <input id="multi_nama" placeholder="Contoh: Gotong Royong Bersih Pura"/>
+
+    <div class="row">
+      <div class="col">
+        <label>Status untuk yang dicentang</label>
+        <select id="multi_status"><option>Alpa</option><option>Hadir</option><option>Ijin</option><option>Sakit</option></select>
+      </div>
+      <div class="col">
+        <label>Denda (Rp) untuk yang dicentang (boleh 0)</label>
+        <input type="number" id="multi_denda" value="0"/>
+      </div>
+      <div class="col">
+        <label>Catatan (opsional)</label>
+        <input id="multi_ket" placeholder="Contoh: Tidak hadir karena..."/>
+      </div>
+    </div>
+
+    <label>Centang anggota yang ingin ditambahkan entri kegiatan (bisa banyak)</label>
+    <div style="display:flex;gap:8px;margin-top:6px">
+      <button class="btn gray" onclick="multiCheckAll()">Centang Semua</button>
+      <button class="btn gray" onclick="multiClearAll()">Hapus Centang</button>
+      <button class="btn gray" onclick="multiSelectByStatusPrompt()">Pilih Berdasarkan Nama (cari)</button>
+    </div>
+    <div class="chk-list" id="multi_chk_list" style="margin-top:8px"></div>
+
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn primary" onclick="simpanKegiatanSekaligus()">💾 Simpan Kegiatan Sekaligus</button>
+      <button class="btn gray" onclick="broadcastMultiLatest()">📤 Kirim Kegiatan ke Anggota (WA)</button>
+      <button class="btn gray" onclick="copyMultiMsgs()">📋 Salin Semua Pesan Kegiatan</button>
+    </div>
+
+    <h4 style="margin-top:12px">Daftar Kegiatan (terbaru atas)</h4>
+    <table id="tblKeg"><thead><tr><th>Nama</th><th>Tanggal</th><th>Jam</th><th>Kegiatan</th><th>Denda</th><th>Status</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+    <div class="summary" id="sumDenda">Total Denda Semua: Rp 0</div>
+    <div class="small" style="margin-top:6px">Catatan: Fitur anti-dobel mencegah entri apabila anggota sudah mendapat entri pada tanggal yang sama dalam selisih < 1 jam.</div>
+  </div>
+
+  <!-- IURAN -->
+  <div id="iuran" class="section">
+    <h3>💰 Data Iuran</h3>
+    <div class="row">
+      <div class="col">
+        <label>Pilih Anggota</label>
+        <select id="sel_iur"><option value="">-- pilih anggota --</option></select>
+      </div>
+      <div class="col">
+        <label>Tanggal</label>
+        <input type="date" id="iur_tgl"/>
+      </div>
+      <div class="col">
+        <label>Jam (opsional)</label>
+        <input type="time" id="iur_time"/>
+      </div>
+    </div>
+    <label>Nominal (Rp)</label>
+    <input type="number" id="iur_nom" value="0"/>
+    <label>Untuk Kegiatan (opsional)</label>
+    <input id="iur_kegiatan" placeholder="Contoh: Ayahan Bersih Pura"/>
+    <label>Status</label>
+    <select id="iur_status"><option>Belum Bayar</option><option>Sudah Bayar</option></select>
+
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn primary" onclick="simpanIuran()">💾 Simpan Iuran</button>
+      <button class="btn gray" onclick="broadcastIurSelected()">📤 Kirim Tagihan ke Anggota (WA)</button>
+      <button class="btn gray" onclick="copyIurMsgs()">📋 Salin Pesan Tagihan</button>
+    </div>
+
+    <h4 style="margin-top:12px">Daftar Iuran (terbaru atas)</h4>
+    <table id="tblIur"><thead><tr><th>Nama</th><th>Tanggal</th><th>Jam</th><th>Nominal</th><th>Kegiatan</th><th>Status</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+    <div class="summary" id="sumIur">Total Iuran Semua: Rp 0</div>
+  </div>
+
+  <!-- PENGUMUMAN -->
+  <div id="pengumuman" class="section">
+    <h3>📣 Pengumuman Kegiatan Akan Datang (Bahasa Bali Alus)</h3>
+    <div class="row">
+      <div class="col"><label>Tanggal</label><input type="date" id="info_tgl"/></div>
+      <div class="col"><label>Jam</label><input type="time" id="info_jam"/></div>
+    </div>
+    <label>Tempat / Nama Pura</label>
+    <input id="info_tempat" placeholder="Contoh: Pura Dalem Desa Linjong"/>
+    <label>Jenis Kegiatan</label>
+    <select id="info_jenis"><option>Ayahan</option><option>Pangeling Upacara</option><option>Paruman</option><option>Lainnya</option></select>
+    <label>Nama Kegiatan</label>
+    <input id="info_kegiatan" placeholder="Contoh: Gotong Royong Bersama"/>
+    <label>Centang anggota yang akan dikirimi</label>
+    <div style="display:flex;gap:8px;margin-top:6px"><button class="btn gray" onclick="checkAll()">Centang Semua</button><button class="btn gray" onclick="clearAll()">Hapus Centang</button></div>
+    <div class="chk-list" id="chkList" style="margin-top:8px"></div>
+
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn green" onclick="broadcastInfoSelected()">📤 Kirim Pengumuman ke Anggota (WA)</button>
+      <button class="btn gray" onclick="copyInfoMsgs()">📋 Salin Semua Pesan</button>
+      <button class="btn gray" onclick="openGroupConfig()">⚙️ Konfigurasi Grup WA</button>
+    </div>
+    <div id="groupRow" style="margin-top:8px;display:none">
+      <label>Link Grup WA Sekaa (chat.whatsapp.com/...)</label>
+      <input id="group_link" placeholder="Paste link grup (chat.whatsapp.com/...)"/>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn primary" onclick="saveGroupLink()">💾 Simpan Link Grup</button>
+        <button class="btn gray" onclick="sendToGroup()">📤 Kirim Pengumuman ke Grup</button>
+      </div>
+      <div class="small" style="margin-top:6px">Setelah membuka link grup, aplikasi akan menyalin pesan (jika browser izinkan). Jika tidak, salin manual dari popup.</div>
+    </div>
+  </div>
+
+  <!-- LAPORAN -->
+  <div id="laporan" class="section">
+    <h3>📊 Laporan & Ekspor</h3>
+    <div class="row">
+      <div class="col">
+        <label>Rincian Denda per Anggota</label>
+        <div id="rincianDenda" style="padding:8px;border:1px solid #eef6ff;border-radius:6px;min-height:80px"></div>
+      </div>
+      <div class="col">
+        <label>Rincian Iuran per Anggota</label>
+        <div id="rincianIur" style="padding:8px;border:1px solid #eef6ff;border-radius:6px;min-height:80px"></div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button class="btn primary" onclick="exportAll()">📤 Ekspor Semua ke Excel</button>
+      <button class="btn gray" onclick="downloadBackup()">📥 Simpan Backup (JSON)</button>
+    </div>
+    <div class="small" style="margin-top:8px">Ekspor membuat file Excel dengan sheet: Anggota, Kegiatan, Iuran.</div>
+  </div>
+
+  <div class="footer">Dibuat untuk Sekaa Perlengkapan Desa Adat Linjong — Prajuru Desa Adat Linjong</div>
+</div>
+
+<!-- xlsx -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+/* ================= Storage & Constants ================= */
+const STORAGE_ANG = 'v6p3_ang', STORAGE_KEG = 'v6p3_keg', STORAGE_IUR = 'v6p3_iur', STORAGE_GROUP = 'v6p3_group';
+let anggota = JSON.parse(localStorage.getItem(STORAGE_ANG) || '[]');
+let kegiatan = JSON.parse(localStorage.getItem(STORAGE_KEG) || '[]');
+let iuran = JSON.parse(localStorage.getItem(STORAGE_IUR) || '[]');
+let groupLink = localStorage.getItem(STORAGE_GROUP) || '';
+
+const SNAME = 'Sekaa Perlengkapan Desa Adat Linjong';
+const SIGN = '— Prajuru Desa Adat Linjong';
+
+/* ================= Helpers ================= */
+function saveAll(){ localStorage.setItem(STORAGE_ANG, JSON.stringify(anggota)); localStorage.setItem(STORAGE_KEG, JSON.stringify(kegiatan)); localStorage.setItem(STORAGE_IUR, JSON.stringify(iuran)); }
+function fmtRp(n){ n = Number(n)||0; return 'Rp ' + n.toLocaleString('id-ID'); }
+function show(id){ document.querySelectorAll('.section').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); renderAll(); window.scrollTo(0,0); }
+
+/* ================= Render functions ================= */
+function renderAll(){ renderAnggota(); renderMultiChkList(); renderKegiatan(); renderIuran(); renderRincian(); renderChkList(); }
+function renderAnggota(){
+  const tb = document.querySelector('#tblAnggota tbody'); tb.innerHTML = '';
+  for(let i=anggota.length-1;i>=0;i--){
+    const a = anggota[i];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${a.nama}</td><td>${a.hp}</td><td><span class="action" onclick="hapusAng(${i})">Hapus</span></td>`;
+    tb.appendChild(tr);
+  }
+  // refresh selects
+  const selI = document.getElementById('sel_iur'), selK = document.getElementById('sel_keg');
+  if(selI){ selI.innerHTML = '<option value="">-- pilih anggota --</option>'; }
+  if(selK){ selK.innerHTML = '<option value="">-- pilih anggota --</option>'; }
+  anggota.forEach(a => { if(selI) selI.innerHTML += `<option>${a.nama}</option>`; if(selK) selK.innerHTML += `<option>${a.nama}</option>`; });
+}
+
+/* Multi checkbox list in Kegiatan */
+function renderMultiChkList(){
+  const box = document.getElementById('multi_chk_list'); if(!box) return;
+  box.innerHTML = '';
+  anggota.forEach((a,idx) => {
+    const id = 'mchk_'+idx;
+    box.innerHTML += `<div style="margin-bottom:6px"><label><input type="checkbox" class="mchk" data-name="${a.nama}" value="${a.nama}"> ${a.nama} — ${a.hp}</label></div>`;
+  });
+}
+
+/* Single checklist for Pengumuman / broadcast list */
+function renderChkList(){
+  const box = document.getElementById('chkList'); if(!box) return;
+  box.innerHTML = '';
+  anggota.forEach((a,idx) => {
+    box.innerHTML += `<div style="margin-bottom:6px"><label><input type="checkbox" data-name="${a.nama}" value="${a.nama}"> ${a.nama} — ${a.hp}</label></div>`;
+  });
+}
+
+/* render kegiatan list */
+function renderKegiatan(){
+  const tb = document.querySelector('#tblKeg tbody'); tb.innerHTML = '';
+  let total = 0;
+  for(let i=kegiatan.length-1;i>=0;i--){
+    const k = kegiatan[i];
+    total += Number(k.denda)||0;
+    const jam = k.time || '-';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${k.nama}</td><td>${k.tgl}</td><td>${jam}</td><td>${k.kegiatan}</td><td>${fmtRp(k.denda)}</td><td>${k.status}</td><td><span class="action" onclick="hapusKeg(${i})">Hapus</span></td>`;
+    tb.appendChild(tr);
+  }
+  document.getElementById('sumDenda').textContent = 'Total Denda Semua: ' + fmtRp(total);
+}
+
+/* render iuran list */
+function renderIuran(){
+  const tb = document.querySelector('#tblIur tbody'); tb.innerHTML = '';
+  let total = 0;
+  for(let i=iuran.length-1;i>=0;i--){
+    const r = iuran[i];
+    total += Number(r.nominal)||0;
+    const jam = r.time || '-';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.nama}</td><td>${r.tgl}</td><td>${jam}</td><td>${fmtRp(r.nominal)}</td><td>${r.kegiatan||'-'}</td><td>${r.status}</td><td><span class="action" onclick="hapusIur(${i})">Hapus</span></td>`;
+    tb.appendChild(tr);
+  }
+  document.getElementById('sumIur').textContent = 'Total Iuran Semua: ' + fmtRp(total);
+}
+
+/* render rincian */
+function renderRincian(){
+  const dendaPer = {}; const iurPer = {};
+  anggota.forEach(a=>{ dendaPer[a.nama]=0; iurPer[a.nama]=0; });
+  kegiatan.forEach(k=> dendaPer[k.nama] = (dendaPer[k.nama]||0) + (Number(k.denda)||0));
+  iuran.forEach(x=> iurPer[x.nama] = (iurPer[x.nama]||0) + (Number(x.nominal)||0));
+  let htmlD=''; for(const n in dendaPer) htmlD += `${n}: ${fmtRp(dendaPer[n])}<br>`;
+  let htmlI=''; for(const n in iurPer) htmlI += `${n}: ${fmtRp(iurPer[n])}<br>`;
+  document.getElementById('rincianDenda').innerHTML = htmlD || '-';
+  document.getElementById('rincianIur').innerHTML = htmlI || '-';
+}
+
+/* ================= CRUD ================= */
+/* Anggota */
+function tambahAng(){
+  const n = document.getElementById('ang_nama').value.trim();
+  const h = document.getElementById('ang_hp').value.trim();
+  if(!n||!h) return alert('Nama & Nomor WA wajib diisi (format 628...).');
+  anggota.push({nama:n,hp:h});
+  saveAll(); document.getElementById('ang_nama').value=''; document.getElementById('ang_hp').value=''; renderAll(); alert('Anggota tersimpan.');
+}
+function hapusAng(i){
+  if(!confirm('Hapus anggota ini?')) return;
+  anggota.splice(i,1); saveAll(); renderAll();
+}
+
+/* Kegiatan Sekaligus with anti-double (<1 hour) */
+function simpanKegiatanSekaligus(){
+  const tgl = document.getElementById('multi_tgl').value;
+  const time = document.getElementById('multi_time').value;
+  const namaKeg = document.getElementById('multi_nama').value.trim();
+  const jenis = document.getElementById('multi_jenis').value.trim();
+  const status = document.getElementById('multi_status').value;
+  const denda = Number(document.getElementById('multi_denda').value)||0;
+  const ket = document.getElementById('multi_ket').value.trim();
+  if(!tgl || !namaKeg) return alert('Isi tanggal dan nama kegiatan.');
+  // get checked members
+  const checked = Array.from(document.querySelectorAll('#multi_chk_list input[type="checkbox"]')).filter(c => c.checked).map(c => c.value);
+  if(checked.length === 0) return alert('Pilih minimal satu anggota untuk disimpan.');
+  // timestamp base
+  const dt = new Date(tgl + (time ? ('T' + time) : 'T00:00'));
+  const tsNow = time ? dt.getTime() : Date.now();
+  let saved = 0, skipped = 0;
+  checked.forEach(name => {
+    // anti double: find last entry same name & date
+    const sameDate = kegiatan.filter(k => k.nama === name && k.tgl === tgl);
+    if(sameDate.length){
+      const last = sameDate.reduce((a,b) => ((a._ts||0) > (b._ts||0) ? a : b));
+      if(last && last._ts && Math.abs(tsNow - last._ts) < 3600000){
+        skipped++;
+        return; // skip this person
+      }
+    }
+    // push entry
+    kegiatan.push({nama:name, tgl:tgl, time: time||'', jenis: jenis||'', kegiatan:namaKeg, denda:denda, status:status, ket:ket, _ts: tsNow});
+    saved++;
+  });
+  saveAll(); renderAll();
+  alert(`Selesai. Tersimpan: ${saved}. Dilewati karena aturan anti-dobel: ${skipped}.`);
+  // clear form (optional)
+  document.getElementById('multi_nama').value=''; document.getElementById('multi_ket').value=''; document.getElementById('multi_denda').value=0;
+}
+
+/* delete keg by index */
+function hapusKeg(i){
+  if(!confirm('Hapus entri kegiatan?')) return;
+  kegiatan.splice(i,1); saveAll(); renderAll();
+}
+
+/* Iuran */
+function simpanIuran(){
+  const nama = document.getElementById('sel_iur').value;
+  const tgl = document.getElementById('iur_tgl').value;
+  const time = document.getElementById('iur_time').value;
+  const nom = Number(document.getElementById('iur_nom').value)||0;
+  const keg = document.getElementById('iur_kegiatan').value.trim();
+  const status = document.getElementById('iur_status').value;
+  if(!nama || !tgl) return alert('Lengkapi: nama & tanggal untuk iuran.');
+  const dt = new Date(tgl + (time ? ('T' + time) : 'T00:00'));
+  const ts = time ? dt.getTime() : Date.now();
+  iuran.push({nama:nama,tgl:tgl,time: time||'',nominal:nom,kegiatan:keg,status:status,_ts:ts});
+  saveAll(); renderAll(); document.getElementById('iur_nom').value=0; document.getElementById('iur_kegiatan').value=''; alert('Iuran tersimpan.');
+}
+function hapusIur(i){ if(!confirm('Hapus entri iuran?')) return; iuran.splice(i,1); saveAll(); renderAll(); }
+
+/* ================= Broadcast helpers ================= */
+function getCheckedRecipients(){
+  const boxes = document.querySelectorAll('#chkList input[type="checkbox"]');
+  const list = [];
+  boxes.forEach(b => { if(b.checked){ const a = anggota.find(x=>x.nama === b.value); if(a) list.push(a); }});
+  return list;
+}
+function checkAll(){ document.querySelectorAll('#chkList input[type="checkbox"]').forEach(b=>b.checked=true); }
+function clearAll(){ document.querySelectorAll('#chkList input[type="checkbox"]').forEach(b=>b.checked=false); }
+
+/* for multi list */
+function multiCheckAll(){ document.querySelectorAll('#multi_chk_list input[type="checkbox"]').forEach(b=>b.checked=true); }
+function multiClearAll(){ document.querySelectorAll('#multi_chk_list input[type="checkbox"]').forEach(b=>b.checked=false); }
+function multiSelectByStatusPrompt(){
+  const q = prompt('Ketik bagian nama untuk memilih (contoh: "Made" memilih semua nama mengandung Made). Kosong = batalkan.');
+  if(!q) return;
+  document.querySelectorAll('#multi_chk_list input[type="checkbox"]').forEach(b=>{ b.checked = b.value.toLowerCase().includes(q.toLowerCase()); });
+}
+
+/* message builders (Bali alus madya) */
+function buildPengumumanMsg(nama, jenis, tgl, jam, tempat, kegiatanText){
+  const jenisText = jenis ? jenis.toLowerCase() : 'ayahan';
+  return `📢 *PANGUMUMAN ${SNAME.toUpperCase()}*\n\nOm Swastyastu ${nama},\nDumogi rahayu sareng sami.\n\nWenten ${jenisText} ring:\n📅 Rahina/Tanggal : ${tgl}\n🕗 Waktu          : ${jam||'-'}\n🏠 Tempat         : ${tempat||'-'}\n🙏 Kegiatan       : ${kegiatanText}\n\nSane dados nyarengin ring ayahan puniki mangda rauh manut wicara.\n\nOm Santih, Santih, Santih Om 🙏\n${SIGN}`;
+}
+function buildIuranMsg(nama, tgl, jam, nominal, kegiatanText, status){
+  return `💰 *IURAN ${SNAME.toUpperCase()}*\n\nOm Swastyastu ${nama},\n\nNgiring ngelingang wenten iuran ring:\n📅 Rahina/Tanggal : ${tgl}\n🕗 Waktu          : ${jam||'-'}\n💵 Jumlah Iuran    : ${fmtRp(nominal)}\n📌 Kegiatan        : ${kegiatanText||'-'}\n📌 Status          : ${status}\n\nMangda prasida ngerereh iuran puniki ring bendesa sekaa.\n\nOm Santih, Santih, Santih Om 🙏\n${SIGN}`;
+}
+function buildKegiatanMsg(item){
+  return `📢 *PANGUMUMAN ${SNAME.toUpperCase()}*\n\nOm Swastyastu ${item.nama},\nDumogi rahayu sareng sami.\n\nWenten kegiatan ring:\n📅 Rahina/Tanggal : ${item.tgl}\n🕗 Waktu          : ${item.time||'-'}\n🏠 Tempat         : -\n🙏 Kegiatan       : ${item.kegiatan}\n\nDenda: ${fmtRp(item.denda)}\n\nMangda rauh manut wicara.\n\nOm Santih, Santih, Santih Om 🙏\n${SIGN}`;
+}
+
+/* open WA with wa.me */
+function openWA(number, text){
+  if(!number) return null;
+  const url = `https://wa.me/${number}?text=${encodeURIComponent(text)}`;
+  try { return window.open(url,'_blank'); } catch(e){ return null; }
+}
+
+/* ================= Broadcast implementations ================= */
+/* Pengumuman to checked */
+function broadcastInfoSelected(){
+  const recips = getCheckedRecipients();
+  const tgl = document.getElementById('info_tgl').value;
+  const jam = document.getElementById('info_jam').value;
+  const tempat = document.getElementById('info_tempat').value;
+  const jenis = document.getElementById('info_jenis').value;
+  const kegText = document.getElementById('info_kegiatan').value.trim();
+  if(!tgl || !kegText) return alert('Isi minimal tanggal dan nama kegiatan.');
+  const list = recips.length ? recips : anggota.slice();
+  if(list.length===0) return alert('Belum ada anggota terdaftar.');
+  if(!confirm(`Kirim pengumuman ke ${list.length} anggota?`)) return;
+  list.forEach((a,i) => setTimeout(()=> openWA(a.hp, buildPengumumanMsg(a.nama, jenis, tgl, jam, tempat, kegText)), i*700));
+  setTimeout(()=> alert('Proses membuka chat WA selesai (cek popup/browser). Jika diblokir, gunakan "Salin Semua Pesan".'), list.length*900);
+}
+function copyInfoMsgs(){
+  const recips = getCheckedRecipients(); const list = recips.length ? recips : anggota.slice();
+  const tgl = document.getElementById('info_tgl').value; const jam = document.getElementById('info_jam').value;
+  const tempat = document.getElementById('info_tempat').value; const jenis = document.getElementById('info_jenis').value;
+  const kegText = document.getElementById('info_kegiatan').value.trim();
+  if(!tgl || !kegText) return alert('Isi minimal tanggal dan nama kegiatan.');
+  let txt = '';
+  list.forEach(a => txt += `Untuk: ${a.nama} (${a.hp})\n${buildPengumumanMsg(a.nama, jenis, tgl, jam, tempat, kegText)}\n\n---\n\n`);
+  navigator.clipboard.writeText(txt).then(()=> alert('Semua pesan pengumuman disalin. Paste ke grup/WA Broadcast.')).catch(()=> alert('Gagal menyalin. Browser tidak memberi izin clipboard.'));
+}
+
+/* Iuran broadcast */
+function broadcastIurSelected(){
+  const recips = getCheckedRecipients(); const list = recips.length ? recips : anggota.slice();
+  if(list.length===0) return alert('Belum ada anggota terdaftar.');
+  const latest = {}; iuran.forEach(x => latest[x.nama] = x);
+  const items = list.map(a => ({ang: a, iur: latest[a.nama]})).filter(it => it.iur);
+  if(items.length===0) return alert('Tidak ada data iuran untuk anggota terpilih.');
+  if(!confirm(`Kirim tagihan iuran ke ${items.length} anggota (menggunakan data iuran terbaru)?`)) return;
+  items.forEach((it,i) => setTimeout(()=> openWA(it.ang.hp, buildIuranMsg(it.ang.nama, it.iur.tgl, it.iur.time||'', it.iur.nominal, it.iur.kegiatan, it.iur.status)), i*700));
+  setTimeout(()=> alert('Proses membuka chat WA selesai.'), items.length*900);
+}
+function copyIurMsgs(){
+  const recips = getCheckedRecipients(); const list = recips.length ? recips : anggota.slice();
+  const latest = {}; iuran.forEach(x => latest[x.nama] = x);
+  let txt = '';
+  list.forEach(a => { const it = latest[a.nama]; if(it) txt += `Untuk: ${a.nama} (${a.hp})\n${buildIuranMsg(a.nama, it.tgl, it.time||'', it.nominal, it.kegiatan, it.status)}\n\n---\n\n`; });
+  if(!txt) return alert('Tidak ada data iuran untuk anggota terpilih.'); 
+  navigator.clipboard.writeText(txt).then(()=> alert('Semua pesan iuran disalin.')).catch(()=> alert('Gagal menyalin.'));
+}
+
+/* Kegiatan latest per person broadcast */
+function broadcastMultiLatest(){
+  const recips = Array.from(document.querySelectorAll('#multi_chk_list input[type="checkbox"]')).filter(c=>c.checked).map(c=>c.value);
+  const list = recips.length ? anggota.filter(a=> recips.includes(a.nama)) : anggota.slice();
+  const latest = {}; kegiatan.forEach(k=> latest[k.nama] = k);
+  const items = list.map(a=> ({ang:a, keg: latest[a.nama]})).filter(it=>it.keg);
+  if(items.length===0) return alert('Tidak ada data kegiatan untuk anggota terpilih.');
+  if(!confirm(`Kirim info kegiatan ke ${items.length} anggota?`)) return;
+  items.forEach((it,i) => setTimeout(()=> openWA(it.ang.hp, buildPengumumanMsg(it.ang.nama, it.keg.jenis||'Ayahan', it.keg.tgl, it.keg.time||'', '-', it.keg.kegiatan)), i*700));
+  setTimeout(()=> alert('Proses membuka chat WA selesai.'), items.length*900);
+}
+function copyMultiMsgs(){
+  const recips = Array.from(document.querySelectorAll('#multi_chk_list input[type="checkbox"]')).filter(c=>c.checked).map(c=>c.value);
+  const list = recips.length ? anggota.filter(a=> recips.includes(a.nama)) : anggota.slice();
+  const latest = {}; kegiatan.forEach(k=> latest[k.nama] = k);
+  let txt = '';
+  list.forEach(a => { const it = latest[a.nama]; if(it) txt += `Untuk: ${a.nama} (${a.hp})\n${buildKegiatanMsg(it || {nama:a.nama,tgl:'-',time:'',kegiatan:'-'})}\n\n---\n\n`; });
+  navigator.clipboard.writeText(txt).then(()=> alert('Pesan kegiatan disalin.')).catch(()=> alert('Gagal menyalin.'));
+}
+
+/* ================= Group link handling ================= */
+function openGroupConfig(){
+  document.getElementById('groupRow').style.display = 'block';
+  document.getElementById('group_link').value = localStorage.getItem(STORAGE_GROUP) || '';
+  window.scrollTo(0, document.getElementById('groupRow').offsetTop - 50);
+}
+function saveGroupLink(){
+  const v = document.getElementById('group_link').value.trim();
+  if(!v) return alert('Masukkan link grup (chat.whatsapp.com/...)');
+  localStorage.setItem(STORAGE_GROUP, v); groupLink = v; alert('Link grup disimpan.');
+}
+function sendToGroup(){
+  const link = localStorage.getItem(STORAGE_GROUP) || document.getElementById('group_link').value.trim();
+  if(!link) return alert('Link grup belum disimpan.');
+  const tgl = document.getElementById('info_tgl').value; const jam = document.getElementById('info_jam').value; const tempat = document.getElementById('info_tempat').value;
+  const jenis = document.getElementById('info_jenis').value; const keg = document.getElementById('info_kegiatan').value.trim();
+  if(!tgl || !keg) return alert('Isi minimal tanggal dan nama kegiatan.');
+  const sampleMsg = buildPengumumanMsg(SNAME, jenis, tgl, jam, tempat, keg);
+  // show popup with message to ensure user can manually copy
+  alert("Salin pesan di bawah ini (pilih & salin), lalu aplikasi grup akan dibuka:\n\n" + sampleMsg);
+  // try auto-copy too
+  try {
+    navigator.clipboard.writeText(sampleMsg).then(()=> {
+      window.open(link,'_blank');
+      alert('Link grup dibuka. Pesan dicoba disalin otomatis — jika tidak, paste manual dari popup.');
+    }).catch(()=> { window.open(link,'_blank'); alert('Link grup dibuka. Silakan paste manual pesan yang tampil di popup.'); });
+  } catch(e){
+    window.open(link,'_blank'); alert('Link grup dibuka. Silakan paste manual pesan yang tampil di popup.');
+  }
+}
+
+/* ================= Export / Backup ================= */
+function exportAll(){
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(anggota), 'Anggota');
+  const kegSheet = kegiatan.map(k => ({Nama:k.nama, Tanggal:k.tgl, Jam:k.time||'', Jenis:k.jenis||'', Kegiatan:k.kegiatan, Denda:k.denda, Status:k.status, Keterangan:k.ket}));
+  const iurSheet = iuran.map(r => ({Nama:r.nama, Tanggal:r.tgl, Jam:r.time||'', Nominal:r.nominal, Kegiatan:r.kegiatan||'', Status:r.status}));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(kegSheet), 'Kegiatan');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(iurSheet), 'Iuran');
+  XLSX.writeFile(wb, 'Cacakan_Sekaa_Linjong_v6.3.xlsx');
+}
+function downloadBackup(){
+  const blob = new Blob([JSON.stringify({anggota,kegiatan,iuran},null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'cacakan_linjong_backup_v6.3.json'; a.click();
+}
+
+/* ================= Reset ================= */
+function resetAllConfirm(){ if(!confirm('Hapus semua data (Anggota, Kegiatan, Iuran)?')) return; anggota=[]; kegiatan=[]; iuran=[]; saveAll(); renderAll(); alert('Semua data dihapus.'); }
+
+/* ================= Init ================= */
+window.addEventListener('load', ()=> { renderAll(); if(localStorage.getItem(STORAGE_GROUP)) document.getElementById('groupRow').style.display = 'block'; });
+
+</script>
+</body>
+</html>
